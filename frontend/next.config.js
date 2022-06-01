@@ -9,6 +9,6 @@ module.exports = {
         ];
     },
     images: {
-        domains: ['localhost:3000', 'images.pexels.com'],
+        domains: ['localhost:3000'],
     },
 };
