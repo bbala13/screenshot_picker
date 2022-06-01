@@ -1,22 +1,32 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const fsRoutes = require('./routes/fs');
-const deleteRoutes = require('./routes/delete');
 
 require('dotenv').config();
+
+const fsRoutes = require('./routes/fs');
+const deleteRoutes = require('./routes/delete');
 
 let app = express();
 const PORT = 3000;
 
 app.use(express.json());
 
+app.use(function (req, res, next) {
+    res.setHeader('Access-Control-Allow-Origin', `${process.env.FRONTEND_URL}`);
+    res.setHeader('Access-Control-Allow-Methods', `POST, DELETE`);
+    next();
+});
+
 app.get('/api', (_, res) => {
     res.send([
         '/api/fs/directory',
         '/api/fs/directory/:directoryId/files',
+        '/static/img/:directoryName/:fileName',
         '/api/deleteFiles',
         '/api/deleteFiles/:filepath',
+        '/api/updateFiles',
+        '/api/updateFiles/:filepath',
     ]);
 });
 

@@ -52,18 +52,40 @@ router.get('/api/fs/directory/:directoryId/files', async (req, res) => {
         }
 
         //get files of specified directory
-        const files = getFiles(path.join(rootDirectory, directoryId));
+        const filepath = path.join(rootDirectory, directoryId);
+        const files = getFiles(filepath).map((filename) => {
+            const fullpath = path.join(filepath, filename);
+            return { filename, fullpath };
+        });
+
+        console.log(files);
 
         const ext = req.query.ext;
 
         if (!ext) {
-            return res.send({ files: [...files] }); //no extension; no filter needed
+            return res.send({ files: files });
+            // return res.send({ files: [...files] }); //no extension; no filter needed
         }
         const filteredFiles = files.filter(
-            (file) => path.extname(file) === `.${ext}`
+            (file) => path.extname(file.filename) === `.${ext}`
         );
 
-        return res.send({ files: [...filteredFiles] });
+        return res.send({ files: filteredFiles });
+    } catch (err) {
+        console.log(err);
+        res.status(500).send();
+    }
+});
+
+router.get('/static/img/:directoryName/:fileName', async (req, res, next) => {
+    const directoryName = req.params.directoryName;
+    const fileName = req.params.fileName;
+    console.log(fileName);
+    console.log('directoryName', directoryName);
+    try {
+        res.sendFile(path.join(directoryName, fileName), {
+            root: process.env.ROOT_DIR,
+        });
     } catch (err) {
         console.log(err);
         res.status(500).send();
